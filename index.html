@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Admin Panel</title>
+</head>
+<body>
+    <h1>Service Repair Shop Admin</h1>
+    
+    <!-- Navigation -->
+    <button onclick="showSection('services')">Manage Services</button>
+    <button onclick="showSection('transactions')">Manage Transactions</button>
+    
+    <hr>
+    
+    <!-- SERVICES SECTION -->
+    <div id="services-section">
+        <h2>Services</h2>
+        
+        <!-- Add Service Form -->
+        <h3>Add New Service</h3>
+        <form id="add-service-form">
+            <label>Name: <input type="text" id="service-name" required></label><br>
+            <label>Price: <input type="number" id="service-price" required></label><br>
+            <label>Description: <textarea id="service-description"></textarea></label><br>
+            <button type="submit">Add Service</button>
+        </form>
+        
+        <hr>
+        
+        <!-- Services Table -->
+        <h3>All Services</h3>
+        <table border="1" id="services-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    
+    <!-- TRANSACTIONS SECTION -->
+    <div id="transactions-section" style="display:none;">
+        <h2>Transactions</h2>
+        
+        <!-- Add Transaction Form -->
+        <h3>Add New Transaction</h3>
+        <form id="add-transaction-form">
+            <label>Service: 
+                <select id="transaction-service" required></select>
+            </label><br>
+            <label>Customer Name: <input type="text" id="transaction-customer" required></label><br>
+            <label>Device Type: 
+                <select id="transaction-device-type" required>
+                    <option value="">Select Type</option>
+                    <option value="Laptop">Laptop</option>
+                    <option value="PC">PC</option>
+                    <option value="Tablet">Tablet</option>
+                    <option value="MacBook">MacBook</option>
+                </select>
+            </label><br>
+            <label>Device Brand: <input type="text" id="transaction-device-brand" required></label><br>
+            <label>Problem: <textarea id="transaction-problem" required></textarea></label><br>
+            <label>Price: <input type="number" id="transaction-price" required></label><br>
+            <button type="submit">Add Transaction</button>
+        </form>
+        
+        <hr>
+        
+        <!-- Transactions Table -->
+        <h3>All Transactions</h3>
+        <table border="1" id="transactions-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Service</th>
+                    <th>Customer</th>
+                    <th>Device</th>
+                    <th>Problem</th>
+                    <th>Price</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    
+    <!-- Edit Service Modal -->
+    <div id="edit-service-modal" style="display:none; border: 2px solid black; padding: 20px; margin: 20px;">
+        <h3>Edit Service</h3>
+        <form id="edit-service-form">
+            <input type="hidden" id="edit-service-id">
+            <label>Name: <input type="text" id="edit-service-name" required></label><br>
+            <label>Price: <input type="number" id="edit-service-price" required></label><br>
+            <label>Description: <textarea id="edit-service-description"></textarea></label><br>
+            <button type="submit">Update Service</button>
+            <button type="button" onclick="closeEditServiceModal()">Cancel</button>
+        </form>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
