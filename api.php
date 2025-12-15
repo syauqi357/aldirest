@@ -5,6 +5,10 @@ Service Repair Shop API
 Integration with Android using Retrofit and Gson
 */
 
+// Disable direct error output and log errors instead
+error_reporting(0);
+ini_set('display_errors', 0);
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
@@ -45,8 +49,11 @@ $method = $_SERVER['REQUEST_METHOD'];
 $request = isset($_GET['endpoint']) ? $_GET['endpoint'] : '';
 $id = isset($_GET['id']) ? intval($_GET['id']) : null;
 
-// Get JSON input for POST/PUT
-$input = json_decode(file_get_contents('php://input'), true);
+// Get JSON input for PUT, or POST data for other requests
+$input = [];
+if ($method === 'PUT' || $method === 'POST' && strpos($_SERVER["CONTENT_TYPE"], "application/json") !== false) {
+    $input = json_decode(file_get_contents('php://input'), true);
+}
 
 // Router
 switch ($request) {
@@ -250,6 +257,7 @@ function handleTransactions($method, $id, $input)
                         st.device_type,
                         st.device_brand,
                         st.problem,
+                        st.image_path,
                         st.price,
                         st.date,
                         st.status
@@ -277,6 +285,7 @@ function handleTransactions($method, $id, $input)
                         st.device_type,
                         st.device_brand,
                         st.problem,
+                        st.image_path,
                         st.price,
                         st.date,
                         st.status
@@ -284,6 +293,11 @@ function handleTransactions($method, $id, $input)
                     JOIN service s ON st.service_id = s.id
                     ORDER BY st.date DESC
                 ");
+
+                if (!$result) {
+                    sendResponse(500, ['error' => 'Database query failed: ' . $conn->error]);
+                }
+
                 $transactions = [];
                 while ($row = $result->fetch_assoc()) {
                     $transactions[] = $row;
@@ -294,19 +308,21 @@ function handleTransactions($method, $id, $input)
 
         case 'POST':
             // Create new transaction
-            if (!isset($input['service_id']) || !isset($input['customer_name']) || 
-                !isset($input['device_type']) || !isset($input['device_brand']) || 
-                !isset($input['problem']) || !isset($input['price'])) {
+            // We use $_POST because the data is coming from multipart/form-data
+            if (!isset($_POST['service_id']) || !isset($_POST['customer_name']) || 
+                !isset($_POST['device_type']) || !isset($_POST['device_brand']) || 
+                !isset($_POST['problem']) || !isset($_POST['price'])) {
                 sendResponse(400, ['error' => 'All fields are required']);
             }
             
-            $service_id = intval($input['service_id']);
-            $customer_name = trim($input['customer_name']);
-            $device_type = trim($input['device_type']);
-            $device_brand = trim($input['device_brand']);
-            $problem = trim($input['problem']);
-            $price = intval($input['price']);
-            $status = isset($input['status']) ? trim($input['status']) : 'Pending';
+            $service_id = intval($_POST['service_id']);
+            $customer_name = trim($_POST['customer_name']);
+            $device_type = trim($_POST['device_type']);
+            $device_brand = trim($_POST['device_brand']);
+            $problem = trim($_POST['problem']);
+            $price = intval($_POST['price']);
+            $status = isset($_POST['status']) ? trim($_POST['status']) : 'Pending';
+            $image_path = null;
             
             if ($service_id <= 0) {
                 sendResponse(400, ['error' => 'Invalid service ID']);
@@ -330,8 +346,32 @@ function handleTransactions($method, $id, $input)
                 sendResponse(404, ['error' => 'Selected service does not exist']);
             }
 
-            $stmt = $conn->prepare("INSERT INTO service_transactions (service_id, customer_name, device_type, device_brand, problem, price, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("isssiss", $service_id, $customer_name, $device_type, $device_brand, $problem, $price, $status);
+            // Handle file upload
+            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                $uploadDir = 'uploads/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                
+                $fileName = uniqid() . '-' . basename($_FILES['image']['name']);
+                $targetPath = $uploadDir . $fileName;
+                
+                // Validate file type
+                $imageFileType = strtolower(pathinfo($targetPath, PATHINFO_EXTENSION));
+                $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+                if (!in_array($imageFileType, $allowedTypes)) {
+                    sendResponse(400, ['error' => 'Only JPG, JPEG, PNG & GIF files are allowed.']);
+                }
+
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+                    $image_path = $targetPath;
+                } else {
+                    sendResponse(500, ['error' => 'Failed to upload image.']);
+                }
+            }
+
+            $stmt = $conn->prepare("INSERT INTO service_transactions (service_id, customer_name, device_type, device_brand, problem, price, status, image_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("isssisss", $service_id, $customer_name, $device_type, $device_brand, $problem, $price, $status, $image_path);
 
             if ($stmt->execute()) {
                 sendResponse(201, [

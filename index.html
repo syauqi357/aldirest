@@ -4,105 +4,295 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Service Admin Panel</title>
+    <style>
+        /* Basic Reset & Body Style */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header and Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        header nav button {
+            margin-left: 10px;
+        }
+
+        /* General Section Styling */
+        .section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h2, h3 {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        /* Form Layout */
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group-full {
+            grid-column: 1 / -1; /* Make this group span all columns */
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Important for width calculation */
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* Table Layout */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f9f9f9;
+        }
+
+        td img {
+            border-radius: 4px;
+        }
+
+        /* Button Styling */
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Modal Layout */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-content form {
+            grid-template-columns: 1fr; /* Single column for modal form */
+        }
+
+        /* Drop Zone Styling */
+        .drop-zone {
+            position: relative;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            color: #aaa;
+            transition: background-color 0.2s, border-color 0.2s;
+            min-height: 100px;
+        }
+
+        .drop-zone:hover {
+            background-color: #f9f9f9;
+            border-color: #999;
+        }
+
+        .drop-zone.dragover {
+            background-color: #f0f8ff;
+            border-color: #0d6efd; /* A blue color for feedback */
+        }
+
+        .drop-zone-input {
+            /* Hide the actual file input */
+            display: none;
+        }
+
+        .drop-zone-preview {
+            margin-top: 10px;
+            display: none; /* Hidden by default */
+            max-width: 100%;
+            max-height: 200px;
+        }
+
+        .drop-zone-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 4px;
+        }
+
+        .drop-zone-prompt {
+            display: block; /* Ensure it's not hidden by the preview */
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Service Repair Shop Admin</h1>
-    
-    <!-- Navigation -->
-    <button onclick="showSection('services')">Manage Services</button>
-    <button onclick="showSection('transactions')">Manage Transactions</button>
-    
-    <hr>
-    
-    <!-- SERVICES SECTION -->
-    <div id="services-section">
-        <h2>Services</h2>
-        
-        <!-- Add Service Form -->
-        <h3>Add New Service</h3>
-        <form id="add-service-form">
-            <label>Name: <input type="text" id="service-name" required></label><br>
-            <label>Price: <input type="number" id="service-price" required></label><br>
-            <label>Description: <textarea id="service-description"></textarea></label><br>
-            <button type="submit">Add Service</button>
-        </form>
-        
-        <!-- Services Table -->
-        <h3>All Services</h3>
-        <table border="1" id="services-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    
-    <!-- TRANSACTIONS SECTION -->
-    <div id="transactions-section" style="display:none;">
-        <h2>Transactions</h2>
-        
-        <!-- Add Transaction Form -->
-        <h3>Add New Transaction</h3>
-        <form id="add-transaction-form">
-            <label>Service: 
-                <select id="transaction-service" required></select>
-            </label><br>
-            <label>Customer Name: <input type="text" id="transaction-customer" required></label><br>
-            <label>Device Type: 
-                <select id="transaction-device-type" required>
-                    <option value="">Select Type</option>
-                    <option value="Laptop">Laptop</option>
-                    <option value="PC">PC</option>
-                    <option value="Tablet">Tablet</option>
-                    <option value="MacBook">MacBook</option>
-                </select>
-            </label><br>
-            <label>Device Brand: <input type="text" id="transaction-device-brand" required></label><br>
-            <label>Problem: <textarea id="transaction-problem" required></textarea></label><br>
-            <label>Price: <input type="number" id="transaction-price" required></label><br>
-            <button type="submit">Add Transaction</button>
-        </form>
-        
-        
-        <!-- Transactions Table -->
-        <h3>All Transactions</h3>
-        <table border="1" id="transactions-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Service</th>
-                    <th>Customer</th>
-                    <th>Device</th>
-                    <th>Problem</th>
-                    <th>Price</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+    <div class="container">
+        <header>
+            <h1>Service Repair Shop Admin</h1>
+            <nav>
+                <button onclick="showSection('services')">Manage Services</button>
+                <button onclick="showSection('transactions')">Manage Transactions</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- SERVICES SECTION -->
+            <div id="services-section" class="section">
+                <h2>Services</h2>
+                
+                <div class="section-content">
+                    <h3>Add New Service</h3>
+                    <form id="add-service-form">
+                        <div class="form-group"><label for="service-name">Name:</label><input type="text" id="service-name" required></div>
+                        <div class="form-group"><label for="service-price">Price:</label><input type="number" id="service-price" required></div>
+                        <div class="form-group"><label for="service-description">Description:</label><textarea id="service-description"></textarea></div>
+                        <div class="form-group"><button type="submit">Add Service</button></div>
+                    </form>
+                </div>
+                
+                <div class="section-content">
+                    <h3>All Services</h3>
+                    <table id="services-table">
+                        <thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Description</th><th>Actions</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- TRANSACTIONS SECTION -->
+            <div id="transactions-section" class="section" style="display:none;">
+                <h2>Transactions</h2>
+                
+                <div class="section-content">
+                    <h3>Add New Transaction</h3>
+                    <form id="add-transaction-form">
+                        <div class="form-group"><label for="transaction-service">Service:</label><select id="transaction-service" required></select></div>
+                        <div class="form-group"><label for="transaction-customer">Customer Name:</label><input type="text" id="transaction-customer" required></div>
+                        <div class="form-group">
+                            <label for="transaction-device-type">Device Type:</label>
+                            <select id="transaction-device-type" required>
+                                <option value="">Select Type</option><option value="Laptop">Laptop</option><option value="PC">PC</option><option value="Tablet">Tablet</option><option value="MacBook">MacBook</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label for="transaction-device-brand">Device Brand:</label><input type="text" id="transaction-device-brand" required></div>
+                        <div class="form-group"><label for="transaction-problem">Problem:</label><textarea id="transaction-problem" required></textarea></div>
+                        <div class="form-group"><label for="transaction-price">Price:</label><input type="number" id="transaction-price" required></div>
+                        <div class="form-group form-group-full">
+                            <div class="drop-zone" id="transaction-drop-zone">
+                                <span class="drop-zone-prompt">Drag & drop an image here, or click to select</span>
+                                <input type="file" id="transaction-image" class="drop-zone-input" accept="image/*">
+                                <div class="drop-zone-preview" id="transaction-image-preview"></div>
+                            </div>
+                        </div>
+                        <div class="form-group"><button type="submit">Add Transaction</button></div>
+                    </form>
+                </div>
+                
+                <div class="section-content">
+                    <h3>All Transactions</h3>
+                    <table id="transactions-table">
+                        <thead><tr><th>ID</th><th>Service</th><th>Customer</th><th>Device</th><th>Image</th><th>Problem</th><th>Price</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
     </div>
     
     <!-- Edit Service Modal -->
-    <div id="edit-service-modal" style="display:none; border: 2px solid black; padding: 20px; margin: 20px;">
-        <h3>Edit Service</h3>
-        <form id="edit-service-form">
-            <input type="hidden" id="edit-service-id">
-            <label>Name: <input type="text" id="edit-service-name" required></label><br>
-            <label>Price: <input type="number" id="edit-service-price" required></label><br>
-            <label>Description: <textarea id="edit-service-description"></textarea></label><br>
-            <button type="submit">Update Service</button>
-            <button type="button" onclick="closeEditServiceModal()">Cancel</button>
-        </form>
+    <div id="edit-service-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Edit Service</h3>
+            <form id="edit-service-form">
+                <input type="hidden" id="edit-service-id">
+                <div class="form-group"><label for="edit-service-name">Name:</label><input type="text" id="edit-service-name" required></div>
+                <div class="form-group"><label for="edit-service-price">Price:</label><input type="number" id="edit-service-price" required></div>
+                <div class="form-group"><label for="edit-service-description">Description:</label><textarea id="edit-service-description"></textarea></div>
+                <div>
+                    <button type="submit">Update Service</button>
+                    <button type="button" onclick="closeEditServiceModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="js/main.js"></script>
+    <script>showSection('services');</script>
 </body>
 </html>

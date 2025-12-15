@@ -79,7 +79,7 @@ const API_URL = 'http://localhost/aldirest/api.php'; // Change this to your API 
             document.getElementById('edit-service-name').value = name;
             document.getElementById('edit-service-price').value = price;
             document.getElementById('edit-service-description').value = description;
-            document.getElementById('edit-service-modal').style.display = 'block';
+            document.getElementById('edit-service-modal').style.display = 'flex';
         }
         
         function closeEditServiceModal() {
@@ -186,11 +186,13 @@ const API_URL = 'http://localhost/aldirest/api.php'; // Change this to your API 
                         <td>${transaction.service_name}</td>
                         <td>${transaction.customer_name}</td>
                         <td>${transaction.device_type} - ${transaction.device_brand}</td>
+                        <td>${transaction.image_path ? `<a href="${transaction.image_path}" target="_blank"><img src="${transaction.image_path}" width="100" alt="Device Image"></a>` : '-'}</td>
                         <td>${transaction.problem}</td>
                         <td>Rp ${transaction.price}</td>
                         <td>${transaction.date}</td>
                         <td>
                             <select onchange="updateStatus(${transaction.id}, this.value)">
+                                <option value="Cancelled" ${transaction.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                                 <option value="Pending" ${transaction.status === 'Pending' ? 'selected' : ''}>Pending</option>
                                 <option value="In Progress" ${transaction.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                                 <option value="Done" ${transaction.status === 'Done' ? 'selected' : ''}>Done</option>
@@ -210,47 +212,114 @@ const API_URL = 'http://localhost/aldirest/api.php'; // Change this to your API 
         document.getElementById('add-transaction-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const data = {
-                service_id: parseInt(document.getElementById('transaction-service').value),
-                customer_name: document.getElementById('transaction-customer').value,
-                device_type: document.getElementById('transaction-device-type').value,
-                device_brand: document.getElementById('transaction-device-brand').value,
-                problem: document.getElementById('transaction-problem').value,
-                price: parseInt(document.getElementById('transaction-price').value)
-            };
+            const formData = new FormData();
+            formData.append('service_id', document.getElementById('transaction-service').value);
+            formData.append('customer_name', document.getElementById('transaction-customer').value);
+            formData.append('device_type', document.getElementById('transaction-device-type').value);
+            formData.append('device_brand', document.getElementById('transaction-device-brand').value);
+            formData.append('problem', document.getElementById('transaction-problem').value);
+            formData.append('price', document.getElementById('transaction-price').value);
             
-            console.log('Sending data:', data); // DEBUG
+            const imageFile = document.getElementById('transaction-image').files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
             
             try {
                 const response = await fetch(`${API_URL}?endpoint=transactions`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    // No 'Content-Type' header; the browser sets it for FormData
+                    body: formData
                 });
                 
-                const responseText = await response.text(); // Get raw response
-                console.log('Raw response:', responseText); // DEBUG
-                
-                // Show first 500 chars of error in alert if not JSON
-                if (!responseText.startsWith('{')) {
-                    alert('PHP Error (check console for full error):\n' + responseText.substring(0, 500));
-                    return;
-                }
-                
-                const result = JSON.parse(responseText); // Try to parse
+                const result = await response.json();
                 
                 if (response.ok) {
                     alert(result.message);
                     document.getElementById('add-transaction-form').reset();
+                    // Reset the drop zone UI
+                    resetDropZone();
                     loadTransactions();
                 } else {
                     alert('Error: ' + result.error);
                 }
-            } catch (error) {
-                alert('Error adding transaction: ' + error.message);
-                console.error('Full error:', error); // DEBUG
+            } catch (error) { // This block will now give you more useful debug info
+                if (error instanceof SyntaxError) {
+                    // This happens when response.json() fails
+                    alert('An error occurred on the server. Check the developer console for more details.');
+                    const responseText = await response.text();
+                    console.error('Server returned non-JSON response:', responseText);
+                } else {
+                    alert('Error adding transaction: ' + error.message);
+                    console.error('Full error:', error);
+                }
             }
         });
+
+        // ============ DRAG & DROP IMAGE INPUT ============
+        const dropZone = document.getElementById('transaction-drop-zone');
+        const fileInput = document.getElementById('transaction-image');
+        const previewContainer = document.getElementById('transaction-image-preview');
+        const promptElement = dropZone.querySelector('.drop-zone-prompt');
+
+        // Open file dialog when drop zone is clicked
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Handle file selection from dialog
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                updatePreview(fileInput.files[0]);
+            }
+        });
+
+        // Add dragover styling
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        // Remove dragover styling
+        ['dragleave', 'dragend'].forEach(type => {
+            dropZone.addEventListener(type, () => {
+                dropZone.classList.remove('dragover');
+            });
+        });
+
+        // Handle dropped files
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files; // Assign dropped files to input
+                updatePreview(fileInput.files[0]);
+            }
+        });
+
+        // Function to update the image preview
+        function updatePreview(file) {
+            previewContainer.innerHTML = ''; // Clear previous preview
+            promptElement.style.display = 'none'; // Hide prompt text
+            previewContainer.style.display = 'block'; // Show preview container
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = document.createElement('img');
+                img.src = reader.result;
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Function to reset the drop zone to its initial state
+        function resetDropZone() {
+            previewContainer.innerHTML = '';
+            previewContainer.style.display = 'none';
+            promptElement.style.display = 'block';
+            fileInput.value = ''; // Important to clear the file list
+        }
         
         // Update transaction status
         async function updateStatus(id, status) {
@@ -296,4 +365,4 @@ const API_URL = 'http://localhost/aldirest/api.php'; // Change this to your API 
         }
         
         // Initial load
-        showSection('services');
+        // showSection('services'); // Moved to script tag in HTML to ensure it runs after functions are defined
