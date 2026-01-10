@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
 )
@@ -33,6 +34,9 @@ func Load() (*Config, error) {
 	// Load .env file if it exists
 	_ = godotenv.Load()
 
+	// Get the upload directory path
+	uploadDir := getUploadDir()
+
 	config := &Config{
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST", "localhost"),
@@ -45,7 +49,7 @@ func Load() (*Config, error) {
 			Port: getEnv("SERVER_PORT", "8080"),
 		},
 		Upload: UploadConfig{
-			Directory: getEnv("UPLOAD_DIR", "uploads"),
+			Directory: uploadDir,
 		},
 	}
 
@@ -67,4 +71,35 @@ func getEnv(key, defaultValue string) string {
 		return value
 	}
 	return defaultValue
+}
+
+func getUploadDir() string {
+	// Check if UPLOAD_DIR is set in environment
+	if uploadDir := os.Getenv("UPLOAD_DIR"); uploadDir != "" {
+		// If it's an absolute path, use it as-is
+		if filepath.IsAbs(uploadDir) {
+			return uploadDir
+		}
+		// If it's relative, make it relative to the current working directory
+		absPath, err := filepath.Abs(uploadDir)
+		if err == nil {
+			return absPath
+		}
+	}
+
+	// Default: use "uploads" directory in the project root
+	// Get current working directory
+	cwd, err := os.Getwd()
+	if err != nil {
+		return "uploads" // Fallback to relative path
+	}
+
+	// If we're in cmd/api, go up two levels to project root
+	if filepath.Base(cwd) == "api" {
+		cwd = filepath.Dir(filepath.Dir(cwd))
+	} else if filepath.Base(cwd) == "cmd" {
+		cwd = filepath.Dir(cwd)
+	}
+
+	return filepath.Join(cwd, "uploads")
 }

@@ -76,7 +76,7 @@ func (s *ServiceService) Update(id int, req *models.ServiceUpdateRequest) error 
 		}
 
 		// Check for duplicate if name is being changed
-		if strings.ToLower(existing.Name) != strings.ToLower(name) {
+		if !strings.EqualFold(existing.Name, name) {
 			exists, err := s.repo.ExistsByName(name, id)
 			if err != nil {
 				return err

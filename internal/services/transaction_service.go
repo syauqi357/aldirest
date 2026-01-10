@@ -231,5 +231,7 @@ func (s *TransactionService) saveImage(fileHeader *multipart.FileHeader) (string
 		return "", err
 	}
 
-	return targetPath, nil
+	// Return URL path instead of file system path
+	// This allows the frontend to fetch from http://localhost:8080/uploads/filename
+	return "/uploads/" + filename, nil
 }

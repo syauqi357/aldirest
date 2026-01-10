@@ -1,0 +1,48 @@
+{
+  "name": "aldirest",
+  "version": "1.0.0",
+  "description": "the webservices of aldrirepairshop",
+  "main": "index.js",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "braces": "^3.0.3",
+    "detect-libc": "^1.0.3",
+    "enhanced-resolve": "^5.18.4",
+    "fill-range": "^7.1.1",
+    "graceful-fs": "^4.2.11",
+    "is-extglob": "^2.1.1",
+    "is-glob": "^4.0.3",
+    "is-number": "^7.0.0",
+    "jiti": "^2.6.1",
+    "lightningcss": "^1.30.2",
+    "lightningcss-win32-x64-msvc": "^1.30.2",
+    "magic-string": "^0.30.21",
+    "micromatch": "^4.0.8",
+    "mri": "^1.2.0",
+    "node-addon-api": "^7.1.1",
+    "picocolors": "^1.1.1",
+    "picomatch": "^2.3.1",
+    "source-map-js": "^1.2.1",
+    "tailwindcss": "^4.1.18",
+    "tapable": "^2.3.0",
+    "to-regex-range": "^5.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tw": "tailwindcss -i ./src/style.css -o ./src/stylecompiled.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syauqi357/aldirest.git"
+  },
+  "keywords": [
+    "repair",
+    "shop"
+  ],
+  "author": "syauqi husin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/syauqi357/aldirest/issues"
+  },
+  "homepage": "https://github.com/syauqi357/aldirest#readme"
+}

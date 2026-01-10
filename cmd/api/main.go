@@ -67,6 +67,7 @@ func main() {
 	// Start server in a goroutine
 	go func() {
 		log.Printf("🚀 Server starting on http://localhost:%s", cfg.Server.Port)
+		log.Printf("📁 Upload directory: %s", cfg.Upload.Directory)
 		log.Printf("📚 API Documentation:")
 		log.Printf("   - Services: http://localhost:%s/api/v1/services", cfg.Server.Port)
 		log.Printf("   - Transactions: http://localhost:%s/api/v1/transactions", cfg.Server.Port)
