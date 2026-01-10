@@ -172,10 +172,14 @@ async function loadTransactionsTable() {
 
     try {
         const data = await getTransactions();
+        
+        // Update Stats
+        updateDashboardStats(data);
+
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-500">No transactions found.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-gray-500 italic">No transactions found. Start by creating one!</td></tr>';
             return;
         }
 
@@ -216,7 +220,7 @@ async function loadTransactionsTable() {
                 <td class="px-6 py-4 whitespace-nowrap text-center">${imageHtml}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">Rp ${formatNumber(t.price)}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <select class="status-select text-xs font-semibold rounded-full px-2 py-1 border-0 cursor-pointer focus:ring-2 focus:ring-indigo-500 ${statusColor}" data-id="${t.id}">
+                    <select class="status-select text-xs font-semibold rounded-md px-2 py-1 border-0 cursor-pointer focus:ring-2 focus:ring-indigo-500 ${statusColor}" data-id="${t.id}">
                         <option value="Pending" ${t.status === 'Pending' ? 'selected' : ''}>Pending</option>
                         <option value="In Progress" ${t.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                         <option value="Completed" ${t.status === 'Completed' ? 'selected' : ''}>Completed</option>
@@ -243,7 +247,7 @@ async function loadTransactionsTable() {
                     await updateTransactionStatus(id, status);
                     showNotification('Status updated', 'success');
                     // Update color class dynamically
-                    e.target.className = `status-select text-xs font-semibold rounded-full px-2 py-1 border-0 cursor-pointer focus:ring-2 focus:ring-indigo-500 ${getStatusColor(status)}`;
+                    e.target.className = `status-select text-xs font-semibold rounded-md px-2 py-1 border-0 cursor-pointer focus:ring-2 focus:ring-indigo-500 ${getStatusColor(status)}`;
                 } catch (error) {
                     showNotification(error.message, 'error');
                     loadTransactionsTable(); // Revert on error
@@ -379,4 +383,16 @@ function resetDropZone() {
     preview.innerHTML = '';
     preview.classList.add('hidden');
     prompt.classList.remove('hidden');
+}
+
+function updateDashboardStats(transactions) {
+    if (!document.getElementById('stat-revenue')) return;
+
+    const totalRevenue = transactions.reduce((sum, t) => sum + (t.status !== 'Cancelled' ? t.price : 0), 0);
+    const activeJobs = transactions.filter(t => t.status === 'Pending' || t.status === 'In Progress').length;
+    const completedJobs = transactions.filter(t => t.status === 'Completed').length;
+
+    document.getElementById('stat-revenue').textContent = `Rp ${formatNumber(totalRevenue)}`;
+    document.getElementById('stat-active').textContent = activeJobs;
+    document.getElementById('stat-completed').textContent = completedJobs;
 }
