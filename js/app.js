@@ -15,8 +15,35 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', (e) => {
             const section = e.target.closest('[data-section]').dataset.section;
             showSection(section);
+            // Close sidebar on mobile
+            if (window.innerWidth < 768) {
+                const sb = document.getElementById('sidebar');
+                if (sb) {
+                    sb.classList.add('hidden');
+                    sb.classList.remove('flex');
+                }
+            }
         });
     });
+
+    // Mobile Sidebar Toggle
+    const sidebar = document.getElementById('sidebar');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+
+    if (mobileMenuBtn && sidebar) {
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.remove('hidden');
+            sidebar.classList.add('flex');
+        });
+    }
+
+    if (closeSidebarBtn && sidebar) {
+        closeSidebarBtn.addEventListener('click', () => {
+            sidebar.classList.add('hidden');
+            sidebar.classList.remove('flex');
+        });
+    }
 
     // Forms
     initServiceForms();

@@ -59,25 +59,38 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="bg-slate-50 h-screen font-sans text-slate-800 flex overflow-hidden selection:bg-brand-500 selection:text-white">
 
     <!-- Sidebar -->
-    <aside class="w-72 bg-slate-900 text-white flex-shrink-0 hidden md:flex flex-col relative overflow-hidden transition-all duration-300">
+    <aside id="sidebar" class="w-72 bg-slate-900 text-white flex-shrink-0 hidden md:flex flex-col fixed inset-y-0 left-0 z-50 md:relative md:z-auto transition-all duration-300">
         <!-- Abstract Background Shape -->
-        <div class="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-md bg-brand-500 opacity-20 blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-md bg-cyan-500 opacity-10 blur-3xl"></div>
+        <div class="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-md bg-brand-500 opacity-20 blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-md bg-cyan-500 opacity-10 blur-3xl pointer-events-none"></div>
 
-        <div class="p-8 z-10">
-            <div class="flex items-center space-x-3 mb-8">
-                <div class="w-10 h-10 rounded-md bg-gradient-to-br from-brand-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        <div class="p-8 z-10 relative">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-md bg-gradient-to-br from-brand-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight">Aldi<span class="text-brand-500">Rest</span></h1>
+                        <p class="text-[10px] text-slate-400 font-medium tracking-widest uppercase">Repair Management</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-xl font-bold tracking-tight">Aldi<span class="text-brand-500">Rest</span></h1>
-                    <p class="text-[10px] text-slate-400 font-medium tracking-widest uppercase">Repair Management</p>
-                </div>
+                <!-- Mobile Close Button -->
+                <button id="close-sidebar-btn" class="md:hidden text-slate-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
             
             <nav class="space-y-2">
@@ -94,7 +107,7 @@
             </nav>
         </div>
         
-        <div class="mt-auto p-6 z-10">
+        <div class="mt-auto p-6 z-10 relative">
             <div class="bg-slate-800 rounded-md p-4 flex items-center space-x-3 border border-slate-700">
                 <div class="h-10 w-10 rounded-md bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">A</div>
                 <div class="flex-1 min-w-0">
@@ -111,7 +124,7 @@
         <!-- Top Header for Mobile -->
         <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 h-16 flex md:hidden items-center px-6 justify-between z-20 sticky top-0">
             <div class="font-bold text-lg">Aldi<span class="text-brand-500">Rest</span></div>
-            <button class="p-2 text-slate-600 rounded-md hover:bg-slate-100">
+            <button id="mobile-menu-btn" class="p-2 text-slate-600 rounded-md hover:bg-slate-100">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
         </header>
