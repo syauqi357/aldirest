@@ -19,8 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.innerWidth < 768) {
                 const sb = document.getElementById('sidebar');
                 if (sb) {
-                    sb.classList.add('hidden');
-                    sb.classList.remove('flex');
+                    sb.classList.add('-translate-x-full');
                 }
             }
         });
@@ -33,15 +32,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (mobileMenuBtn && sidebar) {
         mobileMenuBtn.addEventListener('click', () => {
-            sidebar.classList.remove('hidden');
-            sidebar.classList.add('flex');
+            sidebar.classList.remove('-translate-x-full');
         });
     }
 
     if (closeSidebarBtn && sidebar) {
         closeSidebarBtn.addEventListener('click', () => {
-            sidebar.classList.add('hidden');
-            sidebar.classList.remove('flex');
+            sidebar.classList.add('-translate-x-full');
         });
     }
 
