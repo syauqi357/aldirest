@@ -63,11 +63,11 @@ function showSection(section) {
     // Update Active State on Nav
     document.querySelectorAll('[data-section]').forEach(el => {
         if (el.dataset.section === section) {
-            el.classList.add('bg-indigo-700', 'text-white');
-            el.classList.remove('text-indigo-100', 'hover:bg-indigo-600');
+            el.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+            el.classList.remove('text-indigo-100', 'hover:bg-slate-800');
         } else {
-            el.classList.remove('bg-indigo-700', 'text-white');
-            el.classList.add('text-indigo-100', 'hover:bg-indigo-600');
+            el.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
+            el.classList.add('text-indigo-100', 'hover:bg-slate-800');
         }
     });
 
