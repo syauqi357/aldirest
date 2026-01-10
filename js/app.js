@@ -98,9 +98,10 @@ async function loadServicesTable() {
             return;
         }
 
-        data.forEach(service => {
+        data.forEach((service, index) => {
             const tr = document.createElement('tr');
-            tr.className = 'hover:bg-gray-50 border-b border-gray-100 last:border-0';
+            tr.className = 'hover:bg-gray-50 border-b border-gray-100 last:border-0 animate-fade-in-up opacity-0';
+            tr.style.animationDelay = `${index * 0.05}s`;
             tr.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#${service.id}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${escapeHtml(service.name)}</td>
@@ -210,9 +211,10 @@ async function loadTransactionsTable() {
             return;
         }
 
-        data.forEach(t => {
+        data.forEach((t, index) => {
             const tr = document.createElement('tr');
-            tr.className = 'hover:bg-gray-50 border-b border-gray-100 last:border-0';
+            tr.className = 'hover:bg-gray-50 border-b border-gray-100 last:border-0 animate-fade-in-up opacity-0';
+            tr.style.animationDelay = `${index * 0.05}s`;
             
             // Image handling
             let imageHtml = '<span class="text-gray-400 text-xs">No img</span>';
